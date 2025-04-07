@@ -1,0 +1,14 @@
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.GeneratedMSBuildEditorConfig.editorconfig
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.AssemblyInfoInputs.cache
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.AssemblyInfo.cs
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.csproj.CoreCompileInputs.cache
+/home/matthew/src/projects/TerminalRacer/bin/Debug/net9.0/TerminalRacer
+/home/matthew/src/projects/TerminalRacer/bin/Debug/net9.0/TerminalRacer.deps.json
+/home/matthew/src/projects/TerminalRacer/bin/Debug/net9.0/TerminalRacer.runtimeconfig.json
+/home/matthew/src/projects/TerminalRacer/bin/Debug/net9.0/TerminalRacer.dll
+/home/matthew/src/projects/TerminalRacer/bin/Debug/net9.0/TerminalRacer.pdb
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.dll
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/refint/TerminalRacer.dll
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.pdb
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.genruntimeconfig.cache
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/ref/TerminalRacer.dll
