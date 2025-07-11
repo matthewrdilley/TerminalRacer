@@ -56,7 +56,7 @@ internal static class Program
             if (timeToSleepMs > 0)
             {
                 Thread.Sleep(timeToSleepMs);
-                deltaTime = (timeToSleepMs + stopWatch.ElapsedMilliseconds) / 1000f;
+                deltaTime = TargetFrameTimeDeltaMs / 1000f;
             }
             else
             {

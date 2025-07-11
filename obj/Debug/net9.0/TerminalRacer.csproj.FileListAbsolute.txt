@@ -12,3 +12,4 @@
 /home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.pdb
 /home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.genruntimeconfig.cache
 /home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/ref/TerminalRacer.dll
+/home/matthew/src/projects/TerminalRacer/obj/Debug/net9.0/TerminalRacer.sourcelink.json
