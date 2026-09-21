@@ -35,18 +35,16 @@ internal static class Program
     {
         if (args.Length != 0)
             Console.WriteLine("?");
+        Console.CursorVisible = false;
         while (!pressedKeys.Contains(ConsoleKey.Q))
         {
+            var stopWatch = Stopwatch.StartNew(); 
             frameNum++;
             pressedKeys = new(); 
             while (Console.KeyAvailable) 
             { 
                 pressedKeys.Add(Console.ReadKey(true).Key);
             }
-
-            if (_isInRace && !pressedKeys.Contains(ConsoleKey.G))
-                continue;
-            var stopWatch = Stopwatch.StartNew(); 
             frameContent = string.Empty;
             Update();
             Console.Clear();
@@ -209,36 +207,10 @@ internal static class Program
         return pointList;
     }
 
-    private static Vector3D RotatePoint(
-        Vector3D v,
-        double yaw, double pitch, double roll
-    )
-    {
-        Matrix yawMatrix = new Matrix();
-        yawMatrix.Set(0, 0, Math.Cos(yaw));
-        yawMatrix.Set(2, 0, Math.Sin(yaw));
-        yawMatrix.Set(0, 2, -Math.Sin(yaw));
-        yawMatrix.Set(2, 2, Math.Cos(yaw));
-        
-        Matrix pitchMatrix = new Matrix();
-        pitchMatrix.Set(1, 1, Math.Cos(pitch));
-        pitchMatrix.Set(2, 1, -Math.Sin(pitch));
-        pitchMatrix.Set(1, 2, Math.Sin(pitch));
-        pitchMatrix.Set(2, 2, Math.Cos(pitch));
-        
-        Matrix rollMatrix = new Matrix();
-        rollMatrix.Set(0, 0, Math.Cos(roll));
-        rollMatrix.Set(1, 0, -Math.Sin(roll));
-        rollMatrix.Set(0, 1, Math.Sin(roll));
-        rollMatrix.Set(1, 1, Math.Cos(roll));
-
-        return v * yawMatrix * pitchMatrix * rollMatrix;
-    }
-
     private static List<RenderPoint3D> GetPerspectiveMappedPoints()
     {
         List<RenderPoint3D> results = new();
-        foreach (RenderPoint3D? point in _space)
+        foreach (RenderPoint3D point in _space!)
         {
             if (
                 Math.Sqrt(
@@ -271,7 +243,7 @@ internal static class Program
     private static RenderPoint3D TransformWithPovToOrigin(RenderPoint3D p)
     {
         Vector3D translatedPoint = p - _player!.position;
-        Vector3D rotatedPoint = RotatePoint(translatedPoint, -_player.posYaw-Math.PI/2, -_player.posPitch, -_player.posRoll);
+        Vector3D rotatedPoint = translatedPoint.RotateAboutOrigin(-_player.posYaw-Math.PI/2, -_player.posPitch, -_player.posRoll);
         return new(rotatedPoint.X, rotatedPoint.Y, rotatedPoint.Z, p.Symbol);
     }
 
@@ -312,11 +284,11 @@ internal static class Program
                 }
                 else
                 {
-                    double distanceIndex = (mappedPoints[x, y]!.Z - minZ) / (maxZ - minZ); // the distance from the camera mapped onto a scale from zero to one
+                    double normalizedDistance = (mappedPoints[x, y]!.Z - minZ) / (maxZ - minZ); 
                     if (minZ.Equals(maxZ))
-                        distanceIndex = 1;
+                        normalizedDistance = 1;
                     char[] chars = mappedPoints[x, y]!.Symbol == TrackInfo.RoadChar ? _selectedTrack!.RoadTexture : _selectedTrack!.TurfTexture;
-                    int charIndex = (int) Math.Round(distanceIndex * (chars.Length-1));
+                    int charIndex = (int) Math.Round(normalizedDistance * (chars.Length-1));
                     View[x, y] = chars[charIndex];
                 }
             }

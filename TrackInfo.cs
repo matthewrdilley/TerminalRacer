@@ -134,7 +134,7 @@ internal class TrackInfo(string title, uint scale, uint roadWidth, uint bufferZo
       uint h = position.Item1;
       uint k = position.Item2;
       double r = roadWidth / 2d;
-      // always uses floor in order to prevent creating a position that is not within the circle's position
+      // always uses floor to prevent creating a position that is not within the circle's position
       // which would create a radical with a negative number under it
       uint x1 = h - (uint) Math.Floor(r);
       uint x2 = h + (uint) Math.Floor(r);
@@ -251,7 +251,6 @@ internal class TrackInfo(string title, uint scale, uint roadWidth, uint bufferZo
             }
          }
       }
-
       return blownUp;
    }
 
@@ -280,7 +279,10 @@ internal class TrackInfo(string title, uint scale, uint roadWidth, uint bufferZo
 
    private (uint, uint) TranslateAtAngle((uint, uint) point, double theta, double distance)
    {
-      return (point.Item1 + (uint) (distance * Math.Cos(theta)), point.Item2 + (uint) (distance * Math.Sin(theta)));
+      return (
+         (uint) ((int) point.Item1 + (int) (distance * Math.Cos(theta))), 
+         (uint) ((int) point.Item2 + (int) (distance * Math.Sin(theta)))
+         );
    }
 
    private uint Scale(uint x)

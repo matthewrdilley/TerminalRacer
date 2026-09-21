@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TerminalRacer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+29e51756e1d72307c8b9e4119a85ce88f1c54f70")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1bbd21c22b24e1614227d5ed8a4da9e02b03e041")]
 [assembly: System.Reflection.AssemblyProductAttribute("TerminalRacer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TerminalRacer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

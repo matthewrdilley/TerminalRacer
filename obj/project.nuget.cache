@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "2keSGeK0SSY=",
+  "dgSpecHash": "rcpY2hHzyeU=",
   "success": true,
   "projectFilePath": "/home/matthew/src/projects/TerminalRacer/TerminalRacer.csproj",
   "expectedPackageFiles": [
-    "/home/matthew/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.5/microsoft.aspnetcore.app.ref.9.0.5.nupkg.sha512"
+    "/home/matthew/.nuget/packages/microsoft.netcore.app.ref/9.0.20/microsoft.netcore.app.ref.9.0.20.nupkg.sha512",
+    "/home/matthew/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.20/microsoft.aspnetcore.app.ref.9.0.20.nupkg.sha512",
+    "/home/matthew/.nuget/packages/microsoft.netcore.app.host.linux-x64/9.0.20/microsoft.netcore.app.host.linux-x64.9.0.20.nupkg.sha512"
   ],
   "logs": []
 }
