@@ -108,7 +108,7 @@ internal class Player
         
         // adds deacceleration from air resistance
         // primary cause of deacceleration
-        a += -1 * kAirResistance * Program.deltaTime *_linearVelocity.magnitude * _linearVelocity;
+        a += -1 * kAirResistance * _linearVelocity.magnitude * _linearVelocity;
         
         return a;
     }
