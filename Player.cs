@@ -94,20 +94,29 @@ internal class Player
         // (velocity magnitude multiplied by how aligned it is with wheels)
         double velocityAlignedWithWheels =
             _linearVelocity.magnitude * Math.Cos(Math.Atan2(_linearVelocity.Z, _linearVelocity.X) - posYaw);
-        
-        // adds acceleration from active motor if the velocity aligned with wheels is below max speed for gear
-        if (_isAccelerating && velocityAlignedWithWheels < GetMaxSpeedForGear() ^ GetMaxSpeedForGear() == 0)
-            a += Program.deltaTime * new Vector3D(
-                    Math.Cos(posYaw) * GetMotorAccelerationForGear(),
-                    0, 
-                    Math.Sin(posYaw) * GetMotorAccelerationForGear());
-        
-        // adds deacceleration from inactive motor
-        // exists to stop cars slightly quicker when off gas
-        
-        
+
+        double maxSpeed = GetMaxSpeedForGear();
+        double motorAcceleration = GetMotorAccelerationForGear();
+
+        // the motor pushes until the car reaches the gear's max speed;
+        // for reverse gear the max speed is negative, so the car still has speed to gain
+        // while it is not yet moving fast enough in reverse
+        bool canAccelerate = maxSpeed > 0
+            ? velocityAlignedWithWheels < maxSpeed
+            : velocityAlignedWithWheels > maxSpeed;
+
+        if (_isAccelerating && canAccelerate)
+        {
+            // scale the motor force by the remaining speed so the car settles at max speed
+            // instead of overshooting and oscillating around it
+            double p = 1 - velocityAlignedWithWheels / maxSpeed;
+            a += new Vector3D(
+                Math.Cos(posYaw) * motorAcceleration * p,
+                0,
+                Math.Sin(posYaw) * motorAcceleration * p);
+        }
+
         // adds deacceleration from air resistance
-        // primary cause of deacceleration
         a += -1 * _carStats.kAirResistance * _linearVelocity.magnitude * _linearVelocity;
         
         return a;
@@ -127,9 +136,9 @@ internal class Player
             case 1:
                 return 2.5;
             case 2:
-                return 4.5;
+                return 3.25;
             case 3:
-                return 6;
+                return 5;
         }
 
         throw new Exception("_gear is set to illegal value");
@@ -140,13 +149,13 @@ internal class Player
         switch (_gear)
         {
             case 0:
-                return -36;
+                return -30;
             case 1:
-                return 36;
+                return 35;
             case 2:
-                return 30;
+                return 25;
             case 3:
-                return 24;
+                return 15;
         }
         
         throw new Exception("_gear is set to illegal value");

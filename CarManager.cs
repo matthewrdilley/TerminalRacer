@@ -4,6 +4,6 @@ internal static class CarManager
 {
     internal static readonly List<CarStats> CarStatsList =
     [
-        new("Standard Car", 0.3, 0.15),
+        new("Standard Car", 0.05, 0.15),
     ];
 }
