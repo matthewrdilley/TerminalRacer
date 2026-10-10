@@ -91,7 +91,7 @@ internal class Player
         Vector3D a = new Vector3D(0,0,0);
 
         // dot product between velocity and wheel direction
-        // (velocity magitude multiplied by how aligned it is with wheels)
+        // (velocity magnitude multiplied by how aligned it is with wheels)
         double velocityAlignedWithWheels =
             _linearVelocity.magnitude * Math.Cos(Math.Atan2(_linearVelocity.Z, _linearVelocity.X) - posYaw);
         
