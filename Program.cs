@@ -161,7 +161,7 @@ internal static class Program
     private static void StartRace()
     {
         _isInRace = true;
-        _player = new Player(_selectedTrack!.GetPlayerStartingPosition());
+        _player = new Player(_selectedTrack!.GetPlayerStartingPosition(), selectedCar!);
     }
 
     private static void AddView()

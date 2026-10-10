@@ -4,8 +4,7 @@ namespace TerminalRacer;
 
 internal class Player
 {
-    private double kAirResistance = 0.3;
-    private double inactiveMotorDeacceleration = 0.15;
+    private readonly CarStats _carStats;
     
     private const int MinGear = 0;
     private const int MaxGear = 3;
@@ -29,9 +28,10 @@ internal class Player
     internal double posYaw { get; private set; }
 
     [SetsRequiredMembers]
-    internal Player(Vector3D position)
+    internal Player(Vector3D position, CarStats carStats)
     {
         this.position = position;
+        _carStats = carStats;
         _linearVelocity = new Vector3D(0, 0, 0);
     }
     
@@ -108,7 +108,7 @@ internal class Player
         
         // adds deacceleration from air resistance
         // primary cause of deacceleration
-        a += -1 * kAirResistance * _linearVelocity.magnitude * _linearVelocity;
+        a += -1 * _carStats.kAirResistance * _linearVelocity.magnitude * _linearVelocity;
         
         return a;
     }
