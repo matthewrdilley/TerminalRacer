@@ -84,41 +84,42 @@ internal class Player
     private void UpdateVelocity()
     {
         double oldLinearVelocity = _linearVelocity;
-        _linearVelocity += Program.deltaTime * GetLinearAcceleration();
+        _linearVelocity += Program.deltaTime * GetLinearForce() / _carStats.kMass;
         if (Math.Sign(oldLinearVelocity) == Math.Sign(_linearVelocity) * -1)
             _linearVelocity = 0;
         
         _angularVelocityYaw = GetAngularVelocity();
     }
     
-    private double GetLinearAcceleration()
+    private double GetLinearForce()
     {
-        double a = 0;
+        double f = 0;
         
-        // adds deacceleration from air resistance (a=-kv^2)
-        a -= _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
+        // adds deacceleration from air resistance (F=-kv^2)
+        f -= _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
         
-        // adds deacceleration from turning (a=-kv^2)
-        a -= Math.Sign(_linearVelocity) * _carStats.kTurningDrag * _angularVelocityYaw * _angularVelocityYaw;
+        // adds deacceleration from turning (F=-kv^2)
+        f -= Math.Sign(_linearVelocity) * _carStats.kMass * _carStats.kTurningDrag 
+             * _angularVelocityYaw * _angularVelocityYaw;
         
-        // adds acceleration from the motor (a=c {v<max})
+        // adds acceleration from the motor (F=c {v<max})
         double maxSpeed = GetMaxSpeedForGear();
         if (_isAccelerating && IsBelowMaxSpeed(maxSpeed, _linearVelocity))
         {
-            a += GetMotorAccelerationForGear();
-            if (!IsBelowMaxSpeed(maxSpeed, _linearVelocity + a*Program.deltaTime))
+            f += GetMotorAccelerationForGear();
+            if (!IsBelowMaxSpeed(maxSpeed, _linearVelocity + f*Program.deltaTime))
             {
                 // sets to this value to avoid overshooting the max speed for the gear
-                a = (maxSpeed - _linearVelocity) / Program.deltaTime;
+                f = (maxSpeed - _linearVelocity) / Program.deltaTime;
             }
         }
         
-        return a;
+        return f;
     }
 
     private double GetAngularVelocity()
     {
-        return _steeringWheelRotation * _carStats.kTurning * _linearVelocity;
+        return _steeringWheelRotation * _carStats.kTurningAbility * _linearVelocity / _carStats.kMass;
     }
 
     private double GetMaxSpeedForGear()
