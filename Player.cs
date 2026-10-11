@@ -18,7 +18,7 @@ internal class Player
     private int _steeringWheelRotation;
 
     private double _gas = 1;
-    private Vector3D _linearVelocity; 
+    private double _linearVelocity; 
     private double _angularVelocityYaw; // in radians per second, rate at which posYaw changes
     internal required Vector3D position { get; set; }
 
@@ -32,7 +32,7 @@ internal class Player
     {
         this.position = position;
         _carStats = carStats;
-        _linearVelocity = new Vector3D(0, 0, 0);
+        _linearVelocity = 0;
     }
     
     internal void Update()
@@ -74,57 +74,45 @@ internal class Player
 
     private void UpdatePosition()
     {
-        position += Program.deltaTime * _linearVelocity;
+        position += Program.deltaTime * new Vector3D(_linearVelocity * Math.Cos(-posYaw), 0, _linearVelocity * Math.Sin(-posYaw));
         posYaw += Program.deltaTime * _angularVelocityYaw;
     }
 
     private void UpdateVelocity()
     {
+        double oldLinearVelocity = _linearVelocity;
         _linearVelocity += Program.deltaTime * GetLinearAcceleration();
-        _angularVelocityYaw += Program.deltaTime * GetAngularAcceleration();
+        if (Math.Sign(oldLinearVelocity) == Math.Sign(_linearVelocity) * -1)
+            _linearVelocity = 0;
         
-        Console.WriteLine(_linearVelocity.magnitude);
+        _angularVelocityYaw = GetAngularVelocity();
     }
     
-    private Vector3D GetLinearAcceleration()
+    private double GetLinearAcceleration()
     {
-        Vector3D a = new Vector3D(0,0,0);
-
-        // dot product between velocity and wheel direction
-        // (velocity magnitude multiplied by how aligned it is with wheels)
-        double velocityAlignedWithWheels =
-            _linearVelocity.magnitude * Math.Cos(Math.Atan2(_linearVelocity.Z, _linearVelocity.X) - posYaw);
-
-        double maxSpeed = GetMaxSpeedForGear();
-        double motorAcceleration = GetMotorAccelerationForGear();
-
-        // the motor pushes until the car reaches the gear's max speed;
-        // for reverse gear the max speed is negative, so the car still has speed to gain
-        // while it is not yet moving fast enough in reverse
-        bool canAccelerate = maxSpeed > 0
-            ? velocityAlignedWithWheels < maxSpeed
-            : velocityAlignedWithWheels > maxSpeed;
-
-        if (_isAccelerating && canAccelerate)
-        {
-            // scale the motor force by the remaining speed so the car settles at max speed
-            // instead of overshooting and oscillating around it
-            double p = 1 - velocityAlignedWithWheels / maxSpeed;
-            a += new Vector3D(
-                Math.Cos(posYaw) * motorAcceleration * p,
-                0,
-                Math.Sin(posYaw) * motorAcceleration * p);
-        }
-
+        double a = 0;
+        
         // adds deacceleration from air resistance
-        a += -1 * _carStats.kAirResistance * _linearVelocity.magnitude * _linearVelocity;
+        a += -1 * _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
+        
+        // adds acceleration from the motor
+        double maxSpeed = GetMaxSpeedForGear();
+        if (_isAccelerating && IsBelowMaxSpeed(maxSpeed, _linearVelocity))
+        {
+            a += GetMotorAccelerationForGear();
+            if (!IsBelowMaxSpeed(maxSpeed, _linearVelocity + a*Program.deltaTime))
+            {
+                // sets to this value to avoid overshooting the max speed for the gear
+                a = (maxSpeed - _linearVelocity) / Program.deltaTime;
+            }
+        }
         
         return a;
     }
 
-    private double GetAngularAcceleration()
+    private double GetAngularVelocity()
     {
-        return 0;
+        return _steeringWheelRotation * _carStats.kTurning * _linearVelocity;
     }
 
     private double GetMaxSpeedForGear()
@@ -159,5 +147,10 @@ internal class Player
         }
         
         throw new Exception("_gear is set to illegal value");
+    }
+    
+    private bool IsBelowMaxSpeed(double maxSpeed, double currentSpeed)
+    {
+        return maxSpeed > 0 ? maxSpeed > currentSpeed : maxSpeed < currentSpeed;
     }
 }

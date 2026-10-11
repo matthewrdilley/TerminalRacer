@@ -3,5 +3,5 @@ namespace TerminalRacer;
 internal record CarStats(
     string name,
     double kAirResistance,
-    double inactiveMotorDeacceleration
+    double kTurning
 );
