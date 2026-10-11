@@ -296,6 +296,4 @@ internal static class Program
     }
 
     private static double Square(double x) => x * x;
-    
-    internal static double Hyp(double x, double y) => Math.Sqrt(x * x + y * y);
 }
