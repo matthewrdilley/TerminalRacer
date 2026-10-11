@@ -72,7 +72,6 @@ internal static class Program
         if (_isInRace)
         {
             UpdateRace();
-            frameContent += "player pos: " + _player?.position.X + ", " + _player!.position.Z + "\n";
         }
         else if (selectedCar != null)
         {
