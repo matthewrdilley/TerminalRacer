@@ -70,6 +70,9 @@ internal class Player
     {
         UpdateVelocity();
         UpdatePosition();
+        
+        Console.WriteLine("linear velocity: " + Math.Floor(_linearVelocity*100)/100);
+        Console.WriteLine("angular velocity: " + Math.Floor(_angularVelocityYaw*100)/100);
     }
 
     private void UpdatePosition()
@@ -92,10 +95,13 @@ internal class Player
     {
         double a = 0;
         
-        // adds deacceleration from air resistance
-        a += -1 * _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
+        // adds deacceleration from air resistance (a=-kv^2)
+        a -= _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
         
-        // adds acceleration from the motor
+        // adds deacceleration from turning (a=-kv^2)
+        a -= Math.Sign(_linearVelocity) * _carStats.kTurningDrag * _angularVelocityYaw * _angularVelocityYaw;
+        
+        // adds acceleration from the motor (a=c {v<max})
         double maxSpeed = GetMaxSpeedForGear();
         if (_isAccelerating && IsBelowMaxSpeed(maxSpeed, _linearVelocity))
         {
@@ -124,7 +130,7 @@ internal class Player
             case 1:
                 return 2.5;
             case 2:
-                return 3.25;
+                return 3.5;
             case 3:
                 return 5;
         }
@@ -137,13 +143,13 @@ internal class Player
         switch (_gear)
         {
             case 0:
-                return -30;
+                return -11;
             case 1:
-                return 35;
+                return 12;
             case 2:
-                return 25;
+                return 10;
             case 3:
-                return 15;
+                return 8;
         }
         
         throw new Exception("_gear is set to illegal value");
