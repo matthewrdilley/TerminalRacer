@@ -12,7 +12,8 @@ internal static class Program
     private const double ViewPlaneWidth = 32;
     private const double ViewPlaneHeight = 16 ;
     private const double ViewPlaneZ = 24;
-    private const double RenderDistance = 50;
+    private const double TrackRenderDistance = 50;
+    private const double SpriteRenderDistance = 200;
     
     private static readonly char[,] View = new char[ViewDisplayWidth, ViewDisplayHeight];
     
@@ -71,6 +72,7 @@ internal static class Program
         if (_isInRace)
         {
             UpdateRace();
+            frameContent += "player pos: " + _player?.position.X + ", " + _player!.position.Z + "\n";
         }
         else if (selectedCar != null)
         {
@@ -100,6 +102,7 @@ internal static class Program
         _blownUpTrack ??= _selectedTrack!.GetBlownUp();
         _justTrackPoints ??= GenerateTrackPoints();
         _space = _justTrackPoints.ToList();
+        _space.AddRange(SpriteManager.GetAllPoints());
         
         _player!.Update();
         
@@ -161,7 +164,18 @@ internal static class Program
     private static void StartRace()
     {
         _isInRace = true;
-        _player = new Player(_selectedTrack!.GetPlayerStartingPosition(), selectedCar!);
+        Vector3D startPos = _selectedTrack!.GetPlayerStartingPosition();
+        _player = new Player(startPos, selectedCar!);
+
+        // Spawn the start arch 10 units ahead of the player on the track
+        SpriteManager.StaticSprites.Add(
+            new SpriteInstance(
+                SpriteManager.StartArch,
+                new Vector3D(startPos.X + 10, 0, startPos.Z),
+                Math.PI / 2
+            )
+        );
+        SpriteManager.MarkStaticDirty();
     }
 
     private static void AddView()
@@ -200,7 +214,7 @@ internal static class Program
         {
             for (int z = 0; z < _blownUpTrack!.GetLength(1); z++)
             {
-                pointList.Add(new(x, 0, z, _blownUpTrack[x, z]));
+                pointList.Add(new(x, 0, z, _blownUpTrack[x, z], false));
             }
         }
 
@@ -212,13 +226,8 @@ internal static class Program
         List<RenderPoint3D> results = new();
         foreach (RenderPoint3D point in _space!)
         {
-            if (
-                Math.Sqrt(
-                    Square(point.X-_player!.position.X)
-                    + Square(point.Y-_player.position.Y)
-                    + Square(point.Z-_player.position.Z)
-                ) < RenderDistance
-                )
+            double d = (point-_player!.position).magnitude;
+            if (point.IsSprite ? d < SpriteRenderDistance : d < TrackRenderDistance)
                 results.Add(MapUsingPerspectiveView(TransformWithPovToOrigin(point))); 
         }
 
@@ -234,7 +243,8 @@ internal static class Program
             slopeX * ViewPlaneZ,
             slopeY * ViewPlaneZ,
             p.Z > 0 ? depth : -depth,
-            p.Symbol
+            p.Symbol,
+            p.IsSprite
             );
     }
 
@@ -244,7 +254,7 @@ internal static class Program
     {
         Vector3D translatedPoint = p - _player!.position;
         Vector3D rotatedPoint = translatedPoint.RotateAboutOrigin(-_player.posYaw-Math.PI/2, -_player.posPitch, -_player.posRoll);
-        return new(rotatedPoint.X, rotatedPoint.Y, rotatedPoint.Z, p.Symbol);
+        return new(rotatedPoint.X, rotatedPoint.Y, rotatedPoint.Z, p.Symbol, p.IsSprite);
     }
 
     private static void MapPointsOntoView(List<RenderPoint3D> points)
@@ -281,6 +291,10 @@ internal static class Program
                 if (mappedPoints[x, y] == null)
                 {
                     View[x, y] = ' ';
+                }
+                else if (mappedPoints[x, y]!.IsSprite)
+                {
+                    View[x, y] = mappedPoints[x, y]!.Symbol;
                 }
                 else
                 {
