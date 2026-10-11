@@ -102,7 +102,13 @@ internal class Player
         f -= Math.Sign(_linearVelocity) * _carStats.kMass * _carStats.kTurningDrag 
              * _angularVelocityYaw * _angularVelocityYaw;
         
-        // adds acceleration from the motor (F=c {v<max})
+        // add deacceleration from braking (F=-f)
+        if (_isBraking)
+        {
+            f -= Math.Sign(_linearVelocity) * _carStats.forceOfBraking;
+        }
+        
+        // adds acceleration from the motor (F=f {v<max})
         double maxSpeed = GetMaxSpeedForGear();
         if (_isAccelerating && IsBelowMaxSpeed(maxSpeed, _linearVelocity))
         {

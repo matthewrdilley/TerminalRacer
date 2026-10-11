@@ -5,5 +5,6 @@ internal record CarStats(
     double kAirResistance,
     double kTurningAbility,
     double kTurningDrag,
-    double kMass
+    double kMass,
+    double forceOfBraking
 );
