@@ -98,7 +98,7 @@ internal class Player
         // adds deacceleration from air resistance (F=-kv^2)
         f -= _carStats.kAirResistance * _linearVelocity * Math.Abs(_linearVelocity);
         
-        // adds deacceleration from turning (F=-kv^2)
+        // adds deacceleration from turning (F=-kw^2)
         f -= Math.Sign(_linearVelocity) * _carStats.kMass * _carStats.kTurningDrag 
              * _angularVelocityYaw * _angularVelocityYaw;
         
@@ -113,10 +113,10 @@ internal class Player
         if (_isAccelerating && IsBelowMaxSpeed(maxSpeed, _linearVelocity))
         {
             f += GetMotorAccelerationForGear();
-            if (!IsBelowMaxSpeed(maxSpeed, _linearVelocity + f*Program.deltaTime))
+            if (!IsBelowMaxSpeed(maxSpeed, _linearVelocity + f*Program.deltaTime/_carStats.kMass))
             {
                 // sets to this value to avoid overshooting the max speed for the gear
-                f = (maxSpeed - _linearVelocity) / Program.deltaTime;
+                f = (maxSpeed - _linearVelocity) * _carStats.kMass / Program.deltaTime;
             }
         }
         
